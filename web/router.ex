@@ -19,6 +19,11 @@ defmodule ContactApi.Router do
     get "/", PageController, :index
   end
 
+  scope "/api", ContactApi do
+    pipe_through :api
+    resources "/users", UserController
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", ContactApi do
   #   pipe_through :api
