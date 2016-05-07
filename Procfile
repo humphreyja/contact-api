@@ -1,1 +1,1 @@
-web: mix clean && mix phoenix.server
+web: mix phoenix.server

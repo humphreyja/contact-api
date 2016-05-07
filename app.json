@@ -1,11 +1,6 @@
 {
   "addons": [
-    "heroku-postgresql:hobby-dev",
-    "heroku-redis:hobby-dev",
-    "memcachier:dev",
-    "papertrail:choklad",
-    "rollbar:free",
-    "sendgrid:starter"
+    "heroku-postgresql:hobby-dev"
   ],
   "buildpacks": [{
     "url": "https://github.com/HashNuke/heroku-buildpack-elixir"
