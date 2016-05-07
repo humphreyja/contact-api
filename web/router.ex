@@ -10,6 +10,7 @@ defmodule ContactApi.Router do
   end
 
   pipeline :api do
+    plug :cors
     plug :accepts, ["json"]
   end
 
@@ -22,10 +23,14 @@ defmodule ContactApi.Router do
   scope "/api", ContactApi do
     pipe_through :api
     resources "/users", UserController
+    options "/users", UserController, :options
+    options "/users/:id", UserController, :options
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", ContactApi do
-  #   pipe_through :api
-  # end
+  def cors(conn, _opts) do
+    conn
+      |> put_resp_header("Access-Control-Allow-Origin", "*")
+      |> put_resp_header("Access-Control-Allow-Headers", "Content-Type")
+      |> put_resp_header("Access-Control-Allow-Methods", "GET, PUT, PATCH, OPTIONS, DELETE, POST")
+  end
 end

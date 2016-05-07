@@ -54,4 +54,9 @@ defmodule ContactApi.UserController do
 
     send_resp(conn, :no_content, "")
   end
+
+  def options(conn, _params) do
+    conn
+    |> send_resp(200, "GET,POST,DELETE,OPTIONS,PUT")
+  end
 end
