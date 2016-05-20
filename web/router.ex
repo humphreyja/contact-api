@@ -10,8 +10,12 @@ defmodule ContactApi.Router do
   end
 
   pipeline :api do
-    plug :cors
     plug :accepts, ["json"]
+    plug ContactApi.AuthorizeApi
+  end
+
+  pipeline :auth_api do
+    plug ContactApi.Authentication
   end
 
   scope "/", ContactApi do
@@ -22,15 +26,15 @@ defmodule ContactApi.Router do
 
   scope "/api", ContactApi do
     pipe_through :api
-    resources "/users", UserController
-    options "/users", UserController, :options
-    options "/users/:id", UserController, :options
-  end
 
-  def cors(conn, _opts) do
-    conn
-      |> put_resp_header("Access-Control-Allow-Origin", "*")
-      |> put_resp_header("Access-Control-Allow-Headers", "Content-Type")
-      |> put_resp_header("Access-Control-Allow-Methods", "GET, PUT, PATCH, OPTIONS, DELETE, POST")
+    resources "/users", UserController
+    resources "/sessions", SessionController, only: [:create]
+
+    scope "/user" do
+      pipe_through :auth_api
+
+      resources "/contacts", ContactController
+      resources "/smarttext", SmartTextController, only: [:create]
+    end
   end
 end

@@ -2,23 +2,35 @@ defmodule ContactApi.UserController do
   use ContactApi.Web, :controller
 
   alias ContactApi.User
+  alias ContactApi.Session
 
   plug :scrub_params, "user" when action in [:create, :update]
+
+  # NOTE: Allow for getting a single user by passing in an ID in the params instead of URL
+  # def index(conn, %{"id" => id}) do
+  #   user = Repo.get!(User, id)
+  #   render(conn, "show.json", user: user)
+  # end
 
   def index(conn, _params) do
     users = Repo.all(User)
     render(conn, "index.json", users: users)
   end
 
+
+
+  # SIGN UP
   def create(conn, %{"user" => user_params}) do
-    changeset = User.changeset(%User{}, user_params)
+    changeset = User.registration_changeset(%User{}, user_params)
 
     case Repo.insert(changeset) do
       {:ok, user} ->
+        session_changeset = Session.registration_changeset(%Session{}, %{user_id: user.id})
+        {:ok, session} = Repo.insert(session_changeset)
         conn
         |> put_status(:created)
         |> put_resp_header("location", user_path(conn, :show, user))
-        |> render("show.json", user: user)
+        |> render("new.json", user: user, session: session)
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
@@ -53,10 +65,5 @@ defmodule ContactApi.UserController do
     Repo.delete!(user)
 
     send_resp(conn, :no_content, "")
-  end
-
-  def options(conn, _params) do
-    conn
-    |> send_resp(200, "GET,POST,DELETE,OPTIONS,PUT")
   end
 end

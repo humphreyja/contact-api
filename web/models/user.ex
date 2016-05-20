@@ -4,17 +4,15 @@ defmodule ContactApi.User do
   schema "users" do
     field :first_name, :string
     field :last_name, :string
-    field :auth_id, :string
-    field :auth_token, :string
-    field :auth_expires_at, Ecto.DateTime
-    field :auth_refresh_token, :string
     field :username, :string
     field :crypted_password, :string
+    field :password, :string, virtual: true
+    has_many :sessions, ContactApi.Session
 
     timestamps
   end
 
-  @required_fields ~w(first_name last_name auth_id auth_token auth_expires_at auth_refresh_token username crypted_password)
+  @required_fields ~w(username password)
   @optional_fields ~w()
 
   @doc """
@@ -27,5 +25,22 @@ defmodule ContactApi.User do
     model
     |> cast(params, @required_fields, @optional_fields)
     |> unique_constraint(:username)
+  end
+
+  def registration_changeset(model, params \\ :empty) do
+    model
+    |> changeset(params)
+    |> cast(params, ~w(password), [])
+    |> validate_length(:password, min: 6)
+    |> put_password_hash
+  end
+
+  defp put_password_hash(changeset) do
+    case changeset do
+      %Ecto.Changeset{valid?: true, changes: %{password: pass}} ->
+        put_change(changeset, :crypted_password, Comeonin.Bcrypt.hashpwsalt(pass))
+      _ ->
+        changeset
+    end
   end
 end

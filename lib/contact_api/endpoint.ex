@@ -35,5 +35,8 @@ defmodule ContactApi.Endpoint do
     key: "_contact_api_key",
     signing_salt: "KDqrm++Y"
 
+
+  plug CORSPlug
+
   plug ContactApi.Router
 end
