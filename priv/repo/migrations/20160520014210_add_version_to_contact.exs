@@ -3,7 +3,8 @@ defmodule ContactApi.Repo.Migrations.AddVersionToContact do
 
   def change do
     alter table(:contacts) do
-      add :version, :string
+      add :data_version, :integer, default: 0
+      add :data_update_time, :integer, default: 0
     end
   end
 end

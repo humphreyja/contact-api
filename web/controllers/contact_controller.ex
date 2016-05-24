@@ -41,7 +41,7 @@ defmodule ContactApi.ContactController do
 
   def update(conn, %{"id" => id, "contact" => contact_params}) do
     contact = Repo.get!(Contact, id)
-    changeset = Contact.changeset(contact, contact_params)
+    changeset = Contact.versioned_changeset(contact, contact_params)
 
     case Repo.update(changeset) do
       {:ok, contact} ->
