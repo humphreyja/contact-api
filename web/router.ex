@@ -11,6 +11,11 @@ defmodule ContactApi.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug ContactApi.AuthorizeApi
+  end
+
+  pipeline :auth_api do
+    plug ContactApi.Authentication
   end
 
   scope "/", ContactApi do
@@ -19,8 +24,17 @@ defmodule ContactApi.Router do
     get "/", PageController, :index
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", ContactApi do
-  #   pipe_through :api
-  # end
+  scope "/api", ContactApi do
+    pipe_through :api
+
+    resources "/users", UserController
+    resources "/sessions", SessionController, only: [:create]
+
+    scope "/user" do
+      pipe_through :auth_api
+
+      resources "/contacts", ContactController
+      resources "/smarttext", SmartTextController, only: [:create]
+    end
+  end
 end

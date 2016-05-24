@@ -5,6 +5,15 @@ defmodule ContactApi.ErrorView do
     "Page not found"
   end
 
+  def render("403.json", %{message: message}) do
+    %{error: message}
+  end
+
+  def render("403.json", _no_message) do
+    %{error: "An unknown error occured"}
+  end
+
+
   def render("500.html", _assigns) do
     "Server internal error"
   end

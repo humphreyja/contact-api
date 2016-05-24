@@ -35,8 +35,6 @@ config :phoenix, :stacktrace_depth, 20
 # Configure your database
 config :contact_api, ContactApi.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
   database: "contact_api_dev",
   hostname: "localhost",
   pool_size: 10
